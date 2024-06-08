@@ -9,12 +9,12 @@ const {
 // Routes
 // Create a new user
 router.route("/").post(create);
-// Get a user by ID
-router.route("/:id").get(get);
-// Update a user by ID
-router.route("/:id").put(update);
-// Delete a user by ID
-router.route("/:id").delete(delete_);
+// Get a user by Email
+router.route("/:email").get(get);
+// Update a user by Email
+router.route("/:email").put(update);
+// Delete a user by Email
+router.route("/:email").delete(delete_);
 // Get all users with pagination
 router.route("/").get(getWithPagination);
 
