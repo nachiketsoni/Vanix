@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 exports.successResponse = (req, res, data, code = 200) =>
   res.status(code).json({
     code,
@@ -20,4 +22,12 @@ exports.errorResponse = (
     errorfields,
     success: false,
   });
+};
+
+exports.generateToken = (payload) => {
+  console.log(payload);
+  const token = jwt.sign({ data: payload }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+  return token;
 };

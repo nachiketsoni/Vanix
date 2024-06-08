@@ -3,6 +3,20 @@ const { user } = require("../../actions");
 const { successResponse, errorResponse } = require("../../helper");
 
 //------------------USER CRUD OPERATIONS------------------//
+exports.login = async (req, res, next) => {
+  try {
+    const data = await user.login(req.body);
+    return successResponse(req, res, data);
+  } catch (error) {
+    console.log("err", error);
+    return errorResponse(
+      req,
+      res,
+      httpStatus.INTERNAL_SERVER_ERROR,
+      error.message
+    );
+  }
+};
 exports.create = async (req, res, next) => {
   try {
     const data = await user.create(req.body);

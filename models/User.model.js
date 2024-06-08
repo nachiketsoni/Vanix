@@ -1,9 +1,9 @@
 const { DataTypes } = require("sequelize");
-const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sequelize = require("../configs/database.config");
-
+const bcrypt = require("bcryptjs");
 // Define the User model
+
 const User = sequelize.define(
   "User",
   {
@@ -35,9 +35,6 @@ const User = sequelize.define(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      set(value) {
-        this.setDataValue("password", bcrypt.hashSync(value, 10));
-      },
       validate: {
         len: {
           args: [8],
@@ -51,12 +48,28 @@ const User = sequelize.define(
     hooks: {
       beforeCreate: async (user) => {
         if (user.password) {
-          user.password = await bcrypt.hash(user.password, 10);
+          console.log(user.password);
+          const hashed = bcrypt.hashSync(user.password, 10);
+          bcrypt.compare(user.password, hashed, function (err, result) {
+            if (err) {
+              throw err;
+            }
+            console.log(result);
+            user.password = hashed;
+          });
         }
       },
       beforeUpdate: async (user) => {
-        if (user.password && user.changed("password")) {
-          user.password = await bcrypt.hash(user.password, 10);
+        if (user.changed("password")) {
+          console.log(user.password);
+          const hashed = bcrypt.hashSync(user.password, 10);
+          bcrypt.compare(user.password, hashed, function (err, result) {
+            if (err) {
+              throw err;
+            }
+            console.log(result);
+            user.password = hashed;
+          });
         }
       },
     },
@@ -68,23 +81,6 @@ User.prototype.toJSON = function () {
   const values = Object.assign({}, this.get());
   delete values.password;
   return values;
-};
-
-// Compare the user password with the hashed password in the database
-User.prototype.comparePassword = async function (plainPassword) {
-  try {
-    if (!plainPassword || typeof plainPassword !== "string") {
-      throw new Error("Invalid plaintext password");
-    }
-    if (!this.password || typeof this.password !== "string") {
-      throw new Error("Invalid hashed password");
-    }
-    const isMatch = await bcrypt.compare(plainPassword, this.password);
-    return isMatch;
-  } catch (error) {
-    console.error("Error comparing passwords:", error);
-    return false; // or handle the error in a different way
-  }
 };
 
 // Generate a JWT token for the user
@@ -110,4 +106,21 @@ User.prototype.generateToken = function () {
   }
 };
 
+// Compare the user password with the hashed password in the database
+User.prototype.comparePassword = async function (plainPassword) {
+  try {
+    console.log(plainPassword);
+    if (!plainPassword || typeof plainPassword !== "string") {
+      throw new Error("Invalid plaintext password");
+    }
+    if (!this.password || typeof this.password !== "string") {
+      throw new Error("Invalid hashed password");
+    }
+    const isMatch = await bcrypt.compare(plainPassword, this.password);
+    return isMatch;
+  } catch (error) {
+    console.error("Error comparing passwords:", error);
+    return false; // or handle the error in a different way
+  }
+};
 module.exports = User;
