@@ -1,7 +1,15 @@
-const path = require("path");
-const { Sequelize } = require("sequelize");
+const mongoose = require("mongoose");
 
-module.exports = new Sequelize({
-  dialect: "sqlite",
-  storage: path.join(__dirname, "mvc_demo.sqlite"),
-});
+const connectDatabase = () => {
+  try {
+    mongoose
+      .connect(process.env.MONGODB_URI)
+      .then((data) =>
+        console.log(`Mongodb connected with server: ${data.connection.host}`)
+      );
+  } catch (error) {
+    console.log("DataBase Error : " + error);
+  }
+};
+
+module.exports = connectDatabase;

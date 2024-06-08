@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 exports.successResponse = (req, res, data, code = 200) =>
   res.status(code).json({
     code,
@@ -21,3 +23,5 @@ exports.errorResponse = (
     success: false,
   });
 };
+
+

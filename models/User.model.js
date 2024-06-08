@@ -1,77 +1,60 @@
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
+const validator = require("validator");
 const jwt = require("jsonwebtoken");
-const sequelize = require("../configs/database.config");
 
-// Define the User model
-const User = sequelize.define(
-  "User",
+// Define the user schema
+const userSchema = new Schema(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+    profile_photo: {
+      public_id: { type: String },
+      url: { type: String },
     },
     name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
+      required: true,
       trim: true,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      trim: true,
-      validate: {
-        isEmail: {
-          args: true,
-          msg: "Please enter a valid email address",
-        },
-      },
-      set(value) {
-        this.setDataValue("email", value.toLowerCase());
-      },
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      set(value) {
-        this.setDataValue("password", bcrypt.hashSync(value, 10));
-      },
-      validate: {
-        len: {
-          args: [8],
-          msg: "Your password must be longer than 8 characters",
-        },
-      },
+      type: String,
+      required: true,
+      select: false,
+      minlength: [8, "Your password must be longer than 8 characters"],
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      validate: [validator.isEmail, "Please enter a valid email address"],
+      set: (value) => value.toLowerCase(),
+      index: true,
     },
   },
   {
-    timestamps: true,
-    hooks: {
-      beforeCreate: async (user) => {
-        if (user.password) {
-          user.password = await bcrypt.hash(user.password, 10);
-        }
-      },
-      beforeUpdate: async (user) => {
-        if (user.password && user.changed("password")) {
-          user.password = await bcrypt.hash(user.password, 10);
-        }
-      },
-    },
+    timestamps: true, // Adds createdAt and updatedAt fields
   }
 );
 
-// Hide Password from search results
-User.prototype.toJSON = function () {
-  const values = Object.assign({}, this.get());
-  delete values.password;
-  return values;
-};
+// Pre-save hook to hash the password before saving
+userSchema.pre("save", async function (next) {
+  try {
+    this._isNewUser = this.isNew;
+
+    if (!this.isModified("password")) {
+      return next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Compare the user password with the hashed password in the database
-User.prototype.comparePassword = async function (plainPassword) {
+userSchema.methods.comparePassword = async function (plainPassword) {
   try {
     if (!plainPassword || typeof plainPassword !== "string") {
       throw new Error("Invalid plaintext password");
@@ -88,9 +71,9 @@ User.prototype.comparePassword = async function (plainPassword) {
 };
 
 // Generate a JWT token for the user
-User.prototype.generateToken = function () {
+userSchema.methods.generateToken = function () {
   try {
-    const payload = { id: this.id };
+    const payload = { id: this._id };
 
     // Ensure JWT secret and expiration are defined
     if (!process.env.JWT_SECRET || !process.env.JWT_EXPIRE) {
@@ -109,5 +92,8 @@ User.prototype.generateToken = function () {
     throw new Error("Token generation failed");
   }
 };
+
+// Export the model
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;

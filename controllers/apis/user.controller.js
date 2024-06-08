@@ -3,6 +3,7 @@ const { user } = require("../../actions");
 const { successResponse, errorResponse } = require("../../helper");
 
 //------------------USER CRUD OPERATIONS------------------//
+
 exports.create = async (req, res, next) => {
   try {
     const data = await user.create(req.body);
@@ -61,15 +62,14 @@ exports.update = async (req, res, next) => {
 };
 exports.getWithPagination = async (req, res) => {
   try {
-    const { limit, currentPage, sort, select = "",withPassword, ..._query } = req.query;
+    const { limit, currentPage, sort, select = "", ..._query } = req.query;
     let filter = {};
     filter = { ...filter, ..._query };
     let data = await user.getWithPagination(
       { ...filter },
       { limit: parseInt(limit || 1), page: parseInt(currentPage || 1) },
-      sort ? [sort.split(" ")] : [["createdAt", "DESC"]],
-      select ? select.split(",") : [],
-      withPassword
+      { _id: parseInt(sort || 1) },
+      select
     );
     return successResponse(req, res, data);
   } catch (error) {
