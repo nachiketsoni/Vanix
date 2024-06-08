@@ -7,10 +7,6 @@ const jwt = require("jsonwebtoken");
 // Define the user schema
 const userSchema = new Schema(
   {
-    profile_photo: {
-      public_id: { type: String },
-      url: { type: String },
-    },
     name: {
       type: String,
       required: true,
@@ -31,6 +27,10 @@ const userSchema = new Schema(
       set: (value) => value.toLowerCase(),
       index: true,
     },
+    contacts: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Contact",
+    }],
   },
   {
     timestamps: true, // Adds createdAt and updatedAt fields

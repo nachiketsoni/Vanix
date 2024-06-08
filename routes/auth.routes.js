@@ -7,7 +7,7 @@ const {
 } = require("../controllers/apis");
 
 // Routes
-// Create a new user
+// Login a User
 router.route("/").post(login);
 
 // Export the router
