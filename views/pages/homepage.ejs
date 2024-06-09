@@ -31,6 +31,7 @@
 
 <script>
   (async () => {
+    //-----------Get MY Contact------------//
     let data = [];
     const options = GET_MY_CONTACTS(getCookie(), (payload = ""), (params = ""));
     const result = await API_Call({ ...options });
@@ -128,7 +129,9 @@
                     </thead>
                   `;
     }
+    //------------------------------//
     (async () => {
+        // Delete button Event listner
       const deleBtn = document.querySelectorAll("#deleBtn");
       console.log(deleBtn);
       deleBtn.forEach((e) => {
@@ -158,6 +161,7 @@
           }
         });
       });
+      //------------------//
       //   Logout Code //
       document.querySelector("#logout").addEventListener("click", () => {
         eraseCookie();
