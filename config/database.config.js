@@ -6,7 +6,7 @@ const db = new Sequelize({
   dialect: "sqlite",
   username: null,
   password: null,
-  storage: path.join(__dirname, "vanix.sqlite"),
+  storage: path.join(__dirname, "vanix_db.sqlite"),
 });
 
 // db.addModels([ User,Contact]);
