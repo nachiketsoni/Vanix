@@ -4,27 +4,19 @@ const bcrypt = require("bcryptjs");
 
 exports.login = async (body) => {
   const { email, password } = body;
-  //   if (!email || !password) throw new Error("Email and Password are required");
+  if (!email || !password) throw new Error("Email and Password are required");
 
-  //   console.log(body);
   const user = await User.findOne({
     where: { email },
-    raw: true,
   });
+  if (!user) throw new Error("Email and Password are required");
 
-  //   if (!user) throw new Error("User not found");
+  // Comparing the password with the hashed password in the database using a custom method comparePassword
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) throw new Error("Email and Password are required");
 
-  // Using Bcrypt to Compare Given Password to Hashed Password in Database
-
-  console.log(hashed);
-  bcrypt.compare(password, user.password, function (err, result) {
-    if (err) {
-      throw err;
-    }
-    console.log(result);
-  });
   // Generating a JWT token for authentication and saving user's Id in it
-  const token = user.generateToken(user.id);
+  let token = user.generateToken(user.id);
   if (!token) throw new Error("Failed to generate token");
 
   return token;

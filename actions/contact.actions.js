@@ -1,68 +1,63 @@
+const Contact = require("../models/Contact.model");
 const User = require("../models/User.model");
 
 // Create a new user
-exports.create = async (body) => {
+exports.create = async (user, body) => {
   try {
-    // Create the user
-    const user = await User.create(body);
-
-    // Generate the token
-    const token = user.generateToken();
-    if (!token) throw new Error("Failed to generate token");
-
-    // Return the result
-    const result = {
-      token,
-      user,
-    };
-    return result;
-  } catch (error) {
-    console.error("Error creating user:", error);
-    throw error;
-  }
-};
-
-// Get a user by email
-exports.get = async (email, withPassword = 0) => {
-  try {
-    const user = await User.findOne({
-      where: { email },
-      raw: Number(withPassword),
+    // Create a new contact associated with this user
+    const contact = await Contact.create({
+      ...body,
+      owner: user,
     });
-    return user;
+    // Return the data
+    return contact;
   } catch (error) {
-    console.error("Error getting user:", error);
+    console.error("Error creating:", error);
     throw error;
   }
 };
 
-// Update a user by email
-exports.update = async (email, updateBody) => {
+// Get a data by id
+exports.get = async (id,user) => {
+    console.log(user)
   try {
-    const [updatedCount] = await User.update(updateBody, {
-      where: { email },
+    const data = await Contact.findOne({
+      where: { id,owner:user },
+    });
+    return data;
+  } catch (error) {
+    console.error("Error getting data:", error);
+    throw error;
+  }
+};
+
+// Update a Data by id
+exports.update = async (id, updateBody,user) => {
+  try {
+    const [updatedCount] = await Contact.update(updateBody, {
+      where: { id,owner:user },
     });
     if (updatedCount > 0) {
-      const updatedUser = await User.findOne({ where: { email } });
-      return updatedUser;
+      const updatedData = await Contact.findOne({ where: { id } });
+      return updatedData;
     }
-    throw new Error("User not found");
+    throw new Error("Contact not found");
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.error("Error updating Data:", error);
     throw error;
   }
 };
 
-// Delete a user by email
-exports.delete = async (email) => {
+// Delete a Data by id
+exports.delete = async (id,user) => {
   try {
-    const deleted = await User.destroy({ where: { email } });
+    const deleted = await Contact.destroy({ where: { id, owner: user } });
     if (deleted === 0) {
-        throw new Error("User Not Found")
+      throw new Error("Contact Not Found");
     }
     return Boolean(deleted) ? "Success" : "Failed";
   } catch (error) {
-    console.error("Error deleting user:", error);
+    console.error("Error deleting Data:", error);
     throw error;
   }
 };
@@ -73,7 +68,6 @@ exports.getWithPagination = async (
   pagination,
   sort,
   select = [],
-  withPassword = 0
 ) => {
   try {
     const pageNumber = pagination.page || 1;
@@ -101,12 +95,11 @@ exports.getWithPagination = async (
         throw new Error("Each sort item must be an array with two elements");
       }
     });
-    const users = await User.findAndCountAll({
+    const users = await Contact.findAndCountAll({
       where: query,
       order: sort, // Here's where the sort parameter is used
       limit: pageSize,
       offset: offset,
-      raw: Number(withPassword),
       attributes: select.length > 0 ? select : undefined,
     });
     return {

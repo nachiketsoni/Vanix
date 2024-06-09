@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User.model");
 
 exports.successResponse = (req, res, data, code = 200) =>
   res.status(code).json({
@@ -24,10 +25,33 @@ exports.errorResponse = (
   });
 };
 
-exports.generateToken = (payload) => {
-  console.log(payload);
-  const token = jwt.sign({ data: payload }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+exports.isAuthenticated = (req, res, next) => {
+  // Get the token from the Authorization header
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    // If no Authorization header is present, return an error
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  // The token is typically in the format 'Bearer <token>'
+  const token = authHeader.split(" ")[1];
+
+  if (!token) {
+    // If the token part is missing, return an error
+    return res.status(401).json({ message: "Malformed token" });
+  }
+
+  // Verify the token
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    if (err) {
+      // If the token is invalid or expired, return an error
+      return res.status(403).json({ message: "Invalid token" });
+    }
+    console.log(decoded.id);
+    // If the token is valid, add the decoded data to the request object
+    req.user = decoded.id;
+    // Proceed to the next middleware or route handler
+    next();
   });
-  return token;
 };

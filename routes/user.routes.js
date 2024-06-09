@@ -2,12 +2,11 @@
 const express = require("express");
 const router = express.Router();
 const {
-  user: { login,create, get, getWithPagination, delete_, update },
+  user: {create, get, getWithPagination, delete_, update },
 } = require("../controllers/apis");
 
 // Routes
-// Create/Register a new user
-router.route("/login").post(login);
+
 // Create/Register a new user
 router.route("/").post(create);
 // Get a user by Email

@@ -1,12 +1,13 @@
 const httpStatus = require("http-status");
-const { user } = require("../../actions");
+const { contact } = require("../../actions");
 const { successResponse, errorResponse } = require("../../helper");
 
-//------------------USER CRUD OPERATIONS------------------//
+//------------------CONTACT CRUD OPERATIONS------------------//
 
 exports.create = async (req, res, next) => {
   try {
-    const data = await user.create(req.body);
+   console.log(req.user)
+    const data = await contact.create(req.user,req.body);
     return successResponse(req, res, data);
   } catch (error) {
     console.log("err", error);
@@ -20,7 +21,8 @@ exports.create = async (req, res, next) => {
 };
 exports.get = async (req, res, next) => {
   try {
-    const data = await user.get(req.params.email);
+    console.log(req.user)
+    const data = await contact.get(req.params.id, req.user);
     return successResponse(req, res, data);
   } catch (error) {
     console.log("err", error);
@@ -34,7 +36,7 @@ exports.get = async (req, res, next) => {
 };
 exports.delete_ = async (req, res, next) => {
   try {
-    const data = await user.delete(req.params.email);
+    const data = await contact.delete(req.params.id, req.user);
     return successResponse(req, res, data);
   } catch (error) {
     console.log("err", error);
@@ -48,7 +50,7 @@ exports.delete_ = async (req, res, next) => {
 };
 exports.update = async (req, res, next) => {
   try {
-    const data = await user.update(req.params.email, req.body);
+    const data = await contact.update(req.params.id, req.body, req.user);
     return successResponse(req, res, data);
   } catch (error) {
     console.log("err", error);
@@ -63,14 +65,14 @@ exports.update = async (req, res, next) => {
 exports.getWithPagination = async (req, res) => {
   try {
     const { limit, currentPage, sort, select = "",withPassword, ..._query } = req.query;
-    let filter = {};
+    let filter = {id:req.user };
     filter = { ...filter, ..._query };
-    let data = await user.getWithPagination(
+    let data = await contact.getWithPagination(
       { ...filter },
       { limit: parseInt(limit || 1), page: parseInt(currentPage || 1) },
       sort ? [sort.split(" ")] : [["createdAt", "DESC"]],
       select ? select.split(",") : [],
-      withPassword
+      withPassword,
     );
     return successResponse(req, res, data);
   } catch (error) {

@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const jwt = require("jsonwebtoken");
-const sequelize = require("../configs/database.config");
+const sequelize = require("../config/database.config");
 const bcrypt = require("bcryptjs");
 // Define the User model
 
@@ -44,44 +44,40 @@ const User = sequelize.define(
     },
   },
   {
+    tableName: "User",
     timestamps: true,
     hooks: {
       beforeCreate: async (user) => {
         if (user.password) {
-          console.log(user.password);
-          const hashed = bcrypt.hashSync(user.password, 10);
-          bcrypt.compare(user.password, hashed, function (err, result) {
-            if (err) {
-              throw err;
-            }
-            console.log(result);
-            user.password = hashed;
-          });
+          console.log("Before Create Hook: Original Password:", user.password);
+          const salt = await bcrypt.genSalt(10);
+          const hashed = await bcrypt.hash(user.password, salt);
+          console.log("Before Create Hook: Hashed Password:", hashed);
+          user.password = hashed;
         }
       },
       beforeUpdate: async (user) => {
         if (user.changed("password")) {
-          console.log(user.password);
-          const hashed = bcrypt.hashSync(user.password, 10);
-          bcrypt.compare(user.password, hashed, function (err, result) {
-            if (err) {
-              throw err;
-            }
-            console.log(result);
-            user.password = hashed;
-          });
+          console.log("Before Update Hook: Original Password:", user.password);
+          const salt = await bcrypt.genSalt(10);
+          const hashed = await bcrypt.hash(user.password, salt);
+          console.log("Before Update Hook: Hashed Password:", hashed);
+          user.password = hashed;
         }
       },
     },
   }
 );
 
+// Define associations
+// User.hasMany(Contact, { foreignKey: "owner", allowNull: false });
+
 // Hide Password from search results
-User.prototype.toJSON = function () {
-  const values = Object.assign({}, this.get());
-  delete values.password;
-  return values;
-};
+// User.prototype.toJSON = function () {
+//   const values = Object.assign({}, this.get());
+//   delete values.password;
+//   return values;
+// };
 
 // Generate a JWT token for the user
 User.prototype.generateToken = function () {
