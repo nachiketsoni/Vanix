@@ -91,7 +91,7 @@
 <script src="../../javascripts/formHandler.js"></script>
 <script>
   // Handle Sign In Form
-  (() => {
+ const signIn = () => {
     const Form = document.getElementById("signInForm");
     const FormInputs = Form.querySelectorAll("input");
     const Btn = document.getElementById("signInBtn");
@@ -100,11 +100,11 @@
     const id = ""
     const newToken = true;
     FORM_HANDLER(Form, FormInputs, Btn, API_OPTIONS, REDIRECT,id ,newToken);
-  })()(
+  }
     // ------------------ //
 
     // Handle Sign Up Form
-    () => {
+    const signUp = () => {
       const Form = document.getElementById("signUpForm");
       const FormInputs = Form.querySelectorAll("input");
       const Btn = document.getElementById("signUpBtn");
@@ -114,6 +114,8 @@
        const newToken = true;
       FORM_HANDLER(Form, FormInputs, Btn, API_OPTIONS, REDIRECT,id,newToken);
     }
-  )();
+  ;
+  signIn()
+  signUp()
   // ------------------ //
 </script>
