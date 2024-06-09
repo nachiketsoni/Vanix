@@ -20,7 +20,7 @@ const FORM_HANDLER = async (Form, FormInputs, Btn, API_OPTIONS , REDIRECT,id, ne
     const options = API_OPTIONS(getCookie(), payload,id, (params = ""));
     const result = await API_Call({ ...options });
     if (result.code == 200) {
-        if (newToken) setCookie("token", result.data, COOKIE_EXPIRE());
+        if (newToken) setCookie("token", result.data.token, COOKIE_EXPIRE());
       Toast.fire({
         icon: "success",
         title: result.code + ":" + btnDefaultVal + " Successfully",

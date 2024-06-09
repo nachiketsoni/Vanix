@@ -19,5 +19,5 @@ exports.login = async (body) => {
   let token = user.generateToken(user.id);
   if (!token) throw new Error("Failed to generate token");
 
-  return token;
+  return {token};
 };
