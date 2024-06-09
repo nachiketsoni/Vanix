@@ -64,12 +64,13 @@ exports.update = async (req, res, next) => {
 };
 exports.getWithPagination = async (req, res) => {
   try {
+    console.log(req.user)
     const { limit, currentPage, sort, select = "",withPassword, ..._query } = req.query;
-    let filter = {id:req.user };
+    let filter = {owner:req.user };
     filter = { ...filter, ..._query };
     let data = await contact.getWithPagination(
       { ...filter },
-      { limit: parseInt(limit || 1), page: parseInt(currentPage || 1) },
+      { limit: parseInt(limit || 0), page: parseInt(currentPage || 1) },
       sort ? [sort.split(" ")] : [["createdAt", "DESC"]],
       select ? select.split(",") : [],
       withPassword,

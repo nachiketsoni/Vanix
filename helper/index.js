@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/User.model");
+
 
 exports.successResponse = (req, res, data, code = 200) =>
   res.status(code).json({
@@ -31,7 +31,13 @@ exports.isAuthenticated = (req, res, next) => {
 
   if (!authHeader) {
     // If no Authorization header is present, return an error
-    return res.status(401).json({ message: "No token provided" });
+    return res.status(401).json({
+      code: 401,
+      errorMessage: "Session Expired",
+      error: {},
+      errorfields: {},
+      success: false,
+    });
   }
 
   // The token is typically in the format 'Bearer <token>'
@@ -39,16 +45,27 @@ exports.isAuthenticated = (req, res, next) => {
 
   if (!token) {
     // If the token part is missing, return an error
-    return res.status(401).json({ message: "Malformed token" });
+    return res.status(401).json({
+      code: 401,
+      errorMessage: "Malformed token",
+      error: {},
+      errorfields: {},
+      success: false,
+    });
   }
 
   // Verify the token
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
+      
       // If the token is invalid or expired, return an error
-      return res.status(403).json({ message: "Invalid token" });
-    }
-    console.log(decoded.id);
+    if (err) return res.status(403).json({
+      code: 403,
+      errorMessage: "Session Expired",
+      error: {},
+      errorfields: {},
+      success: false,
+    });
+
     // If the token is valid, add the decoded data to the request object
     req.user = decoded.id;
     // Proceed to the next middleware or route handler

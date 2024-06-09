@@ -1,0 +1,119 @@
+<%- include("../common/header.ejs") %> 
+
+<link rel="stylesheet" href="../../stylesheets/login.css" />
+
+<section>
+  <%- include("../common/background.ejs") %>
+
+  <div id="signIn" class="signin">
+    <div class="content">
+      <h2>Sign In</h2>
+      <form id="signInForm" class="form">
+        <div class="inputBox">
+          <input autocomplete="email" name="email" type="email" required />
+          <i>Email</i>
+        </div>
+        <div class="inputBox">
+          <input
+            autocomplete="password"
+            name="password"
+            type="password"
+            required
+          />
+          <i>Password</i>
+        </div>
+        <div class="links">
+          <a href="#"></a>
+          <a href="#" class="ToggleBtn">Sign Up</a>
+        </div>
+        <div class="inputBox">
+          <input id="signInBtn" type="submit" value="Login" />
+        </div>
+      </form>
+    </div>
+  </div>
+  <div id="signUp" style="display: none" class="signin">
+    <div class="content">
+      <h2>Sign Up</h2>
+      <form id="signUpForm" class="form">
+        <div class="inputBox">
+          <input autocomplete="name" name="name" type="text" required />
+          <i>Name</i>
+        </div>
+        <div class="inputBox">
+          <input autocomplete="email" name="email" type="email" required />
+          <i>Email</i>
+        </div>
+        <div class="inputBox">
+          <input
+            autocomplete="password"
+            name="password"
+            type="password"
+            required
+          />
+          <i>Password</i>
+        </div>
+        <div class="links">
+          <a href="#"></a>
+          <a href="#" class="ToggleBtn">Sign In</a>
+        </div>
+        <div class="inputBox">
+          <input id="signUpBtn" type="submit" value="Sign up" />
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include("../common/footer.ejs") %>
+<script>
+  let val = false;
+  const changePage = () => {
+    if (val == false) {
+      document.getElementById("signUp").style.display = "block";
+      document.getElementById("signIn").style.display = "none";
+    } else {
+      document.getElementById("signIn").style.display = "block";
+      document.getElementById("signUp").style.display = "none";
+    }
+  };
+  //  select all ToggleBtn and wrap a click event listener and call change page
+  document.querySelectorAll(".ToggleBtn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      console.log(e);
+      changePage(!val);
+      val = !val;
+    });
+  });
+</script>
+<script src="../../javascripts/apiCall.js"></script>
+<script src="../../javascripts/apiOptions.js"></script>
+<script src="../../javascripts/formHandler.js"></script>
+<script>
+  // Handle Sign In Form
+  (() => {
+    const Form = document.getElementById("signInForm");
+    const FormInputs = Form.querySelectorAll("input");
+    const Btn = document.getElementById("signInBtn");
+    const API_OPTIONS = LOGIN;
+    const REDIRECT = "/home";
+    const id = ""
+    const newToken = true;
+    FORM_HANDLER(Form, FormInputs, Btn, API_OPTIONS, REDIRECT,id ,newToken);
+  })()(
+    // ------------------ //
+
+    // Handle Sign Up Form
+    () => {
+      const Form = document.getElementById("signUpForm");
+      const FormInputs = Form.querySelectorAll("input");
+      const Btn = document.getElementById("signUpBtn");
+      const API_OPTIONS = SIGNUP;
+      const REDIRECT = "/home";
+      const id = ""
+       const newToken = true;
+      FORM_HANDLER(Form, FormInputs, Btn, API_OPTIONS, REDIRECT,id,newToken);
+    }
+  )();
+  // ------------------ //
+</script>

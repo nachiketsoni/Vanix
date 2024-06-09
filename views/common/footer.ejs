@@ -1,0 +1,35 @@
+</body>
+<!-- Axios -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+  });
+    let showLoader = true
+    const LOADER = () =>{
+        const overlay = document.getElementById("overlay")
+        const loader = document.getElementById("loader")
+        if (showLoader) {
+            overlay.style.display ="none"
+            loader.style.display ="none"
+            showLoader=false
+        }else{
+            overlay.style.display ="block"
+            loader.style.display ="block"
+            showLoader=true
+        }
+    }
+    const getBaseUrl =()=> "<%-process.env.HOST%>"
+    const COOKIE_EXPIRE =()=> "<%-process.env.COOKIE_EXPIRE%>"
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        LOADER()
+});
+</script>
+</html>

@@ -1,0 +1,59 @@
+<%- include("../common/header.ejs") %>
+<link rel="stylesheet" href="../../stylesheets/login.css" />
+
+<section>
+    <%- include("../common/background.ejs") %>
+    
+  <div id="addContact" class="signin">
+    <div class="content">
+      <h2>Add Contact</h2>
+      <form id="addContactForm" class="form">
+        <div class="inputBox">
+          <input autocomplete="name" name="firstName" type="text" required />
+          <i>First Name</i>
+        </div>
+        <div class="inputBox">
+          <input autocomplete="name" name="lastName" type="text" required />
+          <i>Last Name</i>
+        </div>
+        <div class="inputBox">
+          <input autocomplete="phone" name="phone" type="text" required />
+          <i>Phone</i>
+        </div>
+        <div class="inputBox">
+          <input autocomplete="email" name="email" type="email" />
+          <i>Email</i>
+        </div>
+       
+        <div class="links">
+          <a href="#"></a>
+          <a href="#" class="ToggleBtn"></a>
+        </div>
+        <div class="inputBox">
+          <input id="addContactSubmitBtn" type="submit" value="Add Contact" />
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include("../common/footer.ejs") %>
+<script src="../../javascripts/apiCall.js"></script>
+<script src="../../javascripts/apiOptions.js"></script>
+<script src="../../javascripts/formHandler.js"></script>
+<script>
+    
+(() => {
+    const Form = document.getElementById("addContactForm");
+    const FormInputs = Form.querySelectorAll("input");
+    const Btn = document.getElementById("addContactSubmitBtn");
+    const API_OPTIONS = ADD_CONTACT;
+    const REDIRECT = "/home";
+    const id = ""
+    const newToken = false;
+    FORM_HANDLER(Form, FormInputs, Btn, API_OPTIONS, REDIRECT,id ,newToken);
+  })()
+
+
+</script>
+
